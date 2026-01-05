@@ -1,0 +1,123 @@
+/* static/css/style.css */
+/* Windows 95 / 98 Retro UI Theme */
+
+body {
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  background-color: #c0c0c0;
+  margin: 0;
+  padding: 10px;
+  color: black;
+  font-size: 12px;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  min-height: calc(100vh - 20px);
+}
+
+/* Sidebar (Navigation Panel) */
+.sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808088 #ffffff;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 12px;
+  /* 👇 Add these two lines */
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Style for all sidebar links and buttons */
+.sidebar a,
+.sidebar form button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 8px;
+  margin: 4px 0;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  color: black;
+  text-decoration: none;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sidebar a:hover,
+.sidebar form button:hover {
+  background-color: #c0c0c0;
+}
+
+/* Non-interactive user info text */
+.sidebar .user-info {
+  font-size: 11px;
+  margin: 6px 0 4px 0;
+  color: #333;
+}
+
+/* Main content area */
+.content {
+  flex: 1;
+  background-color: #ffffff;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 15px;
+  box-sizing: border-box;
+  min-height: 100px;
+}
+
+/* Pagination bar */
+.pagination {
+  margin-top: 20px;
+  padding: 8px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-size: 12px;
+  text-align: center;
+}
+
+.pagination a {
+  margin: 0 8px;
+  text-decoration: none;
+  color: #0000ff;
+}
+
+.pagination a:hover {
+  text-decoration: underline;
+}
+
+.pagination .page-current {
+  margin: 0 8px;
+  color: black;
+}
+
+/* Optional: headings in content */
+.content h2 {
+  font-size: 14px;
+  margin-top: 0;
+  border-bottom: 1px solid #808080;
+  padding-bottom: 4px;
+  color: #000;
+}
+
+.content p {
+  margin: 8px 0;
+}
+

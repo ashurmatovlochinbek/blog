@@ -1,0 +1,38 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Title</title>#}
+{#</head>#}
+{#<body>#}
+{#    <h2>Logged Out</h2>#}
+{#    <p>You have been successfully logged out.</p>#}
+{#    <a href="{% url 'login' %}">Log in again</a>#}
+{#</body>#}
+{#</html>#}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logged Out - Blog</title>
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-window">
+      <div class="window-title">Logged Out</div>
+
+      <p style="font-size: 12px; margin: 12px 0;">
+        You have been successfully logged out.
+      </p>
+
+      <div style="text-align: center; margin-top: 16px;">
+        <a href="{% url 'login' %}" class="footer-link">Log in again</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
