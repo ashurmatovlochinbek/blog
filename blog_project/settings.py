@@ -28,10 +28,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.getenv('DEBUG') == 'True':
     DEBUG = True
+    ALLOWED_HOSTS = ['*']
 else:
     DEBUG = False
+    ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
 
-ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
+#ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
 
 
 # Application definition
