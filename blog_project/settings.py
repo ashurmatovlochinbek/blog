@@ -29,9 +29,19 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 if os.getenv('DEBUG') == 'True':
     DEBUG = True
     ALLOWED_HOSTS = ['*']
+    DEFAULT_DOMAIN = 'localhost:8000'
 else:
     DEBUG = False
     ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
+    DEFAULT_DOMAIN = 'blog-jo8c.onrender.com'
+
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Proxy/HTTPS settings - ADD THESE
+    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # USE_X_FORWARDED_HOST = True
+    # USE_X_FORWARDED_PORT = True
 
 #ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
 
@@ -105,9 +115,6 @@ else:
         conn_max_age=600,
         )
     }
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
 
 
 # Password validation
@@ -156,15 +163,24 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# settings.py
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+# # settings.py
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+
+EMAIL_BACKEND = 'django_mailjet.backends.MailjetBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+MAILJET_API_KEY = os.getenv('MAILJET_API_KEY')
+MAILJET_API_SECRET = os.getenv('MAILJET_API_SECRET')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = 30
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-
 
 
 
@@ -202,4 +218,3 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 # STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{STATICFILES_LOCATION}/'
 # MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{MEDIAFILES_LOCATION}/'
 
-DEFAULT_DOMAIN = 'blog-jo8c.onrender.com'
