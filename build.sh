@@ -9,4 +9,6 @@ python manage.py migrate
 
 python manage.py createsu
 
+python manage.py setdomain
+
 #python -m gunicorn blog_project.asgi:application -k uvicorn.workers.UvicornWorker
