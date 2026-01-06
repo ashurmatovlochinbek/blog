@@ -7,4 +7,6 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
+python manage.py createsu
+
 #python -m gunicorn blog_project.asgi:application -k uvicorn.workers.UvicornWorker
