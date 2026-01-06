@@ -1,0 +1,26 @@
+<!-- templates/blogs/blog_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}<title>{{ blog.title }} - Retro Blog</title>{% endblock %}
+
+{% block content %}
+  <div class="blog-detail">
+    <h1 class="blog-title">{{ blog.title }}</h1>
+
+    <div class="blog-meta">
+      By <strong>{{ blog.author.user.username }}</strong> •
+      {{ blog.created_at|date:"F d, Y" }}
+      {% if blog.updated_at > blog.created_at %}
+        (Updated: {{ blog.updated_at|date:"M d, Y" }})
+      {% endif %}
+    </div>
+
+    <div class="blog-content">
+      {{ blog.content|linebreaks }}
+    </div>
+
+    <div style="margin-top: 20px;">
+      <a href="{% url 'blog-list' %}" class="footer-link" style="font-size: 12px;">← Back to Blog List</a>
+    </div>
+  </div>
+{% endblock %}
