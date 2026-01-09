@@ -6,6 +6,34 @@
 {% block content %}
   <h2>Latest Blogs</h2>
 
+  <!-- Search Form (Windows 95 Style) -->
+  <div class="search-box">
+    <form method="get" action="{% url 'blog-list' %}">
+      <input
+        type="text"
+        name="q"
+        placeholder="Search by title or author..."
+        value="{{ search_query }}"
+        class="search-input"
+      >
+      <button type="submit" class="search-button">Search</button>
+      {% if search_query %}
+        <a href="{% url 'blog-list' %}" class="clear-search">Clear</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Search Results Info -->
+  {% if search_query %}
+    <div class="search-results-info">
+      Search results for: <strong>"{{ search_query }}"</strong>
+      {% if page_obj %}
+        ({{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }})
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- Blog List -->
   {% if blogs %}
     {% for blog in blogs %}
       <div class="blog-item">
@@ -21,6 +49,10 @@
       </div>
     {% endfor %}
   {% else %}
-    <p class="no-blogs">No blogs yet. Be the first to write one!</p>
+    {% if search_query %}
+      <p class="no-blogs">No blogs found matching "{{ search_query }}". Try a different search!</p>
+    {% else %}
+      <p class="no-blogs">No blogs yet. Be the first to write one!</p>
+    {% endif %}
   {% endif %}
 {% endblock %}

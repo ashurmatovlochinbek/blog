@@ -1,0 +1,34 @@
+<!-- templates/blogs/blog_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}<title>Create Blog - Retro Blog</title>{% endblock %}
+
+{% block content %}
+  <h2>Create New Blog</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label for="{{ form.title.id_for_label }}">Title:</label>
+      {{ form.title }}
+      {% if form.title.errors %}
+        <div class="error-box">{{ form.title.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="{{ form.content.id_for_label }}">Content:</label>
+      {{ form.content }}
+      {% if form.content.errors %}
+        <div class=error-box">{{ form.content.errors }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit">Publish Blog</button>
+  </form>
+
+  <div style="margin-top: 16px;">
+    <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>
+  </div>
+{% endblock %}

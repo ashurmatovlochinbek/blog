@@ -1,6 +1,11 @@
 /* static/css/style.css */
 /* Windows 95 / 98 Retro UI Theme */
 
+/* Universal box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "MS Sans Serif", "Tahoma", sans-serif;
   background-color: #c0c0c0;
@@ -8,6 +13,7 @@ body {
   padding: 10px;
   color: black;
   font-size: 12px;
+  line-height: 1.3;
 }
 
 .container {
@@ -21,11 +27,9 @@ body {
   width: 200px;
   background-color: #ffffff;
   border: 2px solid;
-  border-color: #ffffff #808080 #808088 #ffffff;
+  border-color: #ffffff #808080 #808080 #ffffff; /* Fixed typo: was #808088 */
   padding: 10px;
-  box-sizing: border-box;
   font-size: 12px;
-  /* 👇 Add these two lines */
   display: flex;
   flex-direction: column;
 }
@@ -53,7 +57,6 @@ body {
   font-family: "MS Sans Serif", "Tahoma", sans-serif;
   font-size: 12px;
   cursor: pointer;
-  box-sizing: border-box;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -62,6 +65,12 @@ body {
 .sidebar a:hover,
 .sidebar form button:hover {
   background-color: #c0c0c0;
+}
+
+/* Focus styles for accessibility (keyboard navigation) */
+.sidebar a:focus,
+button[type="submit"]:focus {
+  outline: 1px dotted #000000;
 }
 
 /* Non-interactive user info text */
@@ -78,21 +87,19 @@ body {
   border: 2px solid;
   border-color: #ffffff #808080 #808080 #ffffff;
   padding: 15px;
-  box-sizing: border-box;
   min-height: 100px;
 }
 
 /* Pagination bar */
 .pagination {
-  margin: 20px auto 0 auto; /* center horizontally */
+  margin: 20px auto 0 auto;
   padding: 6px 10px;
   background-color: #d4d0c8;
   border: 2px solid;
   border-color: #ffffff #808080 #808080 #ffffff;
   font-size: 12px;
   text-align: center;
-  display: inline-block; /* ← KEY: makes it shrink to content width */
-  box-sizing: border-box;
+  display: inline-block;
   max-width: 100%;
 }
 
@@ -111,7 +118,7 @@ body {
   color: black;
 }
 
-/* Optional: headings in content */
+/* Headings in content */
 .content h2 {
   font-size: 14px;
   margin-top: 0;
@@ -125,15 +132,6 @@ body {
 }
 
 /* === Blog List Styles === */
-
-.blog-list h2 {
-  font-size: 14px;
-  margin-top: 0;
-  border-bottom: 1px solid #808080;
-  padding-bottom: 4px;
-  color: #000;
-}
-
 .blog-item {
   border-bottom: 1px solid #ccc;
   padding-bottom: 12px;
@@ -171,9 +169,7 @@ body {
   color: #333;
 }
 
-
 /* === Blog Detail Styles === */
-
 .blog-detail {
   font-size: 12px;
 }
@@ -186,14 +182,6 @@ body {
   color: #000;
 }
 
-.blog-meta {
-  font-size: 11px;
-  color: #555;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #ccc;
-}
-
 .blog-content {
   line-height: 1.4;
   margin-bottom: 20px;
@@ -203,7 +191,56 @@ body {
   margin: 8px 0;
 }
 
-/* Reuse footer-link style from login.css */
+/* === Form Styles === */
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 4px;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  background-color: #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+}
+
+button[type="submit"] {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+button[type="submit"]:hover {
+  background-color: #c0c0c0;
+}
+
+.error-box {
+  background-color: #ffecec;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  color: #c00;
+  padding: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+/* === Reusable Link Styles === */
 .footer-link {
   color: #0000ff;
   text-decoration: none;
@@ -213,3 +250,100 @@ body {
 .footer-link:hover {
   text-decoration: underline;
 }
+
+/* === Search Box Styles (Windows 95 Theme) === */
+.search-box {
+  margin-bottom: 16px;
+  padding: 10px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  display: inline-block; /* ← Shrinks to fit content instead of full width */
+  min-width: 300px; /* ← Optional: minimum width */
+}
+
+.search-box form {
+  display: flex;
+  gap: 6px;
+  align-items: center; /* ← This should align, but let's be more explicit */
+  flex-wrap: wrap;
+}
+
+.search-input {
+  width: 300px;
+  max-width: 100%;
+  padding: 3px 4px;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background-color: #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  color: #000;
+  line-height: 1.2; /* ← Add this for consistency */
+  height: 22px; /* ← Fixed height for alignment */
+}
+
+.search-input:focus {
+  outline: 1px dotted #000000;
+}
+
+.search-button {
+  padding: 4px 12px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  color: #000;
+  line-height: 1.2; /* ← Add this */
+  height: 22px; /* ← Same height as input */
+}
+
+.search-button:hover {
+  background-color: #c0c0c0;
+}
+
+.search-button:active {
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.clear-search {
+  padding: 4px 12px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  text-decoration: none;
+  color: #000;
+  display: inline-block;
+  line-height: 1.2; /* ← Add this */
+  height: 22px; /* ← Same height as others */
+  box-sizing: border-box; /* ← Important for consistent sizing */
+}
+
+.clear-search:hover {
+  background-color: #c0c0c0;
+}
+
+.clear-search:active {
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.search-results-info {
+  margin: 10px 0 16px 0;
+  padding: 8px;
+  background-color: #ffffe1;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-size: 12px;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  color: #000;
+}
+
+.search-results-info strong {
+  font-weight: bold;
+  color: #000080;
+}
+
