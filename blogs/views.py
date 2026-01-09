@@ -39,6 +39,39 @@ class BlogListView(ListView):
         context['search_query'] = self.request.GET.get('q', '')
         return context
 
+# class BlogListView(ListView):
+#     model = Blog
+#     context_object_name = 'blogs'
+#     paginate_by = 10
+#     template_name = 'blogs/blog_list.html'
+#
+#     def get_queryset(self):
+#         queryset = Blog.objects.all()
+#         search_query = self.request.GET.get('q', '')
+#
+#         if search_query:
+#             queryset = queryset.filter(
+#                 Q(title__icontains=search_query) |
+#                 Q(author__user__username__icontains=search_query)
+#             )
+#
+#         return queryset.order_by('-created_at')
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['search_query'] = self.request.GET.get('q', '')
+#         return context
+#
+#     def render_to_response(self, context, **response_kwargs):
+#         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+#             return render(
+#                 self.request,
+#                 "blogs/fragments/_blog_list_fragment.html",
+#                 context
+#             )
+#         return super().render_to_response(context, **response_kwargs)
+
+
 class BlogDetailView(DetailView):
     model = Blog
     context_object_name = 'blog'

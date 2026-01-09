@@ -296,6 +296,7 @@ button[type="submit"]:hover {
   font-size: 12px;
   cursor: pointer;
   color: #000;
+  margin-top: 0 !important;
   line-height: 1.2; /* ← Add this */
   height: 22px; /* ← Same height as input */
 }
