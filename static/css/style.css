@@ -389,3 +389,54 @@ button[type="submit"]:hover {
     max-width: 300px;
   }
 }
+
+/* === Mobile Hamburger Menu === */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  padding: 6px 10px;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 101; /* ← Higher than sidebar (100) */
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 24px;
+  transition: left 0.3s ease; /* ← Add transition for smooth movement */
+}
+
+.mobile-menu-toggle.active {
+  left: 210px; /* ← Move right when sidebar is open (sidebar width 200px + 10px gap) */
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Hidden off-screen */
+    height: 100vh;
+    width: 200px;
+    z-index: 100; /* ← Lower than toggle button */
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    overflow-y: auto; /* ← Add scrolling if content is tall */
+  }
+
+  .sidebar.active {
+    left: 0; /* Slide in */
+  }
+
+  .container {
+    margin-top: 40px; /* Make space for hamburger button */
+  }
+}
