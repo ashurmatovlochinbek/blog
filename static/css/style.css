@@ -348,3 +348,44 @@ button[type="submit"]:hover {
   color: #000080;
 }
 
+/* === Mobile & Tablet Adjustments === */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 5px;
+  }
+
+  .sidebar {
+    width: 100%;
+    order: 2;
+  }
+
+  .content {
+    order: 1;
+  }
+
+  .search-box {
+    min-width: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .search-input,
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .sidebar a,
+  .sidebar form button {
+    white-space: normal;
+    text-align: center;
+    padding: 8px;
+  }
+
+  .login-window {
+    width: 95vw;
+    max-width: 300px;
+  }
+}
