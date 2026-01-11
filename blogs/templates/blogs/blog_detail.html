@@ -1,5 +1,6 @@
 <!-- templates/blogs/blog_detail.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}<title>{{ blog.title }} - Retro Blog</title>{% endblock %}
 
@@ -20,7 +21,57 @@
     </div>
 
     <div style="margin-top: 20px;">
-      <a href="{% url 'blog-list' %}" class="footer-link" style="font-size: 12px;">← Back to Blog List</a>
+      <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+      <h3 class="comments-title">
+        Comments (<span id="comment-count">{{ blog.comments.count }}</span>)
+      </h3>
+
+      <!-- Comment Form (only for logged-in users) -->
+      {% if user.is_authenticated %}
+        <div class="comment-form-box">
+          <form id="comment-form" method="post" action="{% url 'add-comment' blog.pk %}">
+            {% csrf_token %}
+            <div class="form-group">
+              {{ comment_form.content }}
+            </div>
+            <button type="submit" class="comment-submit-btn">Post Comment</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="login-prompt">
+          <p>
+            Please <a href="{% url 'login' %}?next={{ request.path }}" class="footer-link">login</a>
+            to leave a comment.
+          </p>
+        </div>
+      {% endif %}
+
+      <!-- Comments List -->
+      <div id="comments-list">
+        {% if comments %}
+          {% for comment in comments %}
+            {% include 'blogs/fragments/comment_item.html' %}
+          {% endfor %}
+        {% else %}
+          <p class="no-comments" id="no-comments-message">No comments yet. Be the first to comment!</p>
+        {% endif %}
+      </div>
+
+      <!-- Load More Button -->
+      {% if page_obj.has_next %}
+        <div class="load-more-container">
+          <button id="load-more-btn" class="load-more-btn" data-next-page="{{ page_obj.next_page_number }}" data-blog-pk="{{ blog.pk }}">
+            Load More Comments
+          </button>
+        </div>
+      {% endif %}
     </div>
   </div>
+
+  <!-- JavaScript for Comments -->
+  <script src="{% static 'js/comments.js' %}"></script>
 {% endblock %}

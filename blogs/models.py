@@ -48,4 +48,4 @@ class Comment(models.Model):
         return f'Comment by {self.user.username} on {self.blog.title}'
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']

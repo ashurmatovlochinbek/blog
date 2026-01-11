@@ -1,12 +1,16 @@
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DetailView
 
 from blogs.forms import CustomUserCreationForm, BlogForm
 from blogs.models import Blog, Author
+from blogs.forms import CommentForm
+from blogs.models import Comment
 
 
 # Create your views here.
@@ -77,13 +81,89 @@ class BlogDetailView(DetailView):
     context_object_name = 'blog'
     template_name = 'blogs/blog_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     return context
 
     # def get_object(self):
     #     # Use 'blog_id' from URL instead of default 'pk'
     #     return Blog.objects.get(id=self.kwargs['blog_id'])
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from django.core.paginator import Paginator
+        comments = self.object.comments.all().order_by('-created_at')
+        paginator = Paginator(comments, 10)  # Show 5 comments per page
+        page_number = self.request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        context['comments'] = page_obj
+        context['page_obj'] = page_obj
+        context['comment_form'] = CommentForm()
+
+        # Check if it's an AJAX request for pagination
+        context['is_ajax'] = self.request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        # Check if it's an AJAX request for loading more comments
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Build HTML for all comments on this page
+            comments_html = ''
+            for comment in context['comments']:
+                comments_html += render_to_string('blogs/fragments/comment_item.html', {
+                    'comment': comment
+                }, request=self.request)
+
+            # Return JSON response
+            return JsonResponse({
+                'html': comments_html,
+                'has_next': context['page_obj'].has_next(),
+                'next_page': context['page_obj'].next_page_number() if context['page_obj'].has_next() else None
+            })
+
+        # Normal request - return HTML page
+        return super().render_to_response(context, **response_kwargs)
+
+
+class AddCommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def get_login_url(self):
+        return f"{reverse('login')}?next={self.request.path}"
+
+    def form_valid(self, form):
+        blog = Blog.objects.get(pk=self.kwargs['blog_pk'])
+
+        comment = form.save(commit=False)
+        comment.blog = blog
+        comment.user = self.request.user
+        comment.save()
+
+        # Check if it's an AJAX request
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string('blogs/fragments/comment_item.html', {
+                'comment': comment,
+                'user': self.request.user
+            })
+
+            return JsonResponse({
+                'success': True,
+                'html': html,
+                'comment_count': blog.comments.count()
+            })
+
+        return redirect('blog-detail', pk=blog.pk)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            }, status=400)
+
+        return redirect('blog-detail', pk=self.kwargs['blog_pk'])
 
 
 class BlogCreateView(LoginRequiredMixin, CreateView):

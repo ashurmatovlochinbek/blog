@@ -1,0 +1,11 @@
+<!-- templates/blogs/comment_item.html -->
+<!-- This renders a SINGLE comment -->
+<div class="comment-item">
+  <div class="comment-header">
+    <strong>{{ comment.user.username }}</strong>
+    <span class="comment-date">{{ comment.created_at|date:"M d, Y - g:i A" }}</span>
+  </div>
+  <div class="comment-content">
+    {{ comment.content|linebreaks }}
+  </div>
+</div>
