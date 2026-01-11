@@ -10,7 +10,7 @@ class Author(models.Model):
     bio = models.TextField(blank=True)
 
     def get_absolute_url(self):
-        pass
+        return reverse('blogger-detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.user.username

@@ -1,0 +1,52 @@
+<!-- blogs/blogger_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>{{ blogger.user.username }}'s Blogs - Retro Blog</title>
+{% endblock %}
+
+{% block content %}
+  <h2>Blogs by <strong>{{ blogger.user.username }}</strong></h2>
+
+  {% if blogs %}
+    {% for blog in blogs %}
+      <div class="blog-item">
+        <h3><a href="{% url 'blog-detail' blog.pk %}" class="footer-link">{{ blog.title }}</a></h3>
+        <div class="blog-meta">
+          {{ blog.created_at|date:"F d, Y" }}
+          {% if blog.updated_at > blog.created_at %}
+            (Updated: {{ blog.updated_at|date:"M d, Y" }})
+          {% endif %}
+        </div>
+        <div class="blog-excerpt">
+          {{ blog.content|truncatewords:30 }}
+        </div>
+      </div>
+    {% endfor %}
+
+    <!-- ✅ Simple pagination (no url_replace needed) -->
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="page-current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="no-blogs">This blogger hasn't posted any blogs yet.</p>
+  {% endif %}
+
+  <div style="margin-top: 20px;">
+    <a href="{% url 'blogger-list' %}" class="footer-link">← Back to Bloggers</a>
+  </div>
+{% endblock %}

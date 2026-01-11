@@ -1,5 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -18,6 +19,38 @@ from blogs.models import Comment
 # @login_required
 def index(request):
     return render(request, 'blogs/index.html')
+
+
+class BloggerListView(ListView):
+    model = Author
+    context_object_name = 'bloggers'
+    paginate_by = 10
+    template_name = 'blogs/blogger_list.html'
+
+    def get_queryset(self):
+        return Author.objects.all().order_by('user__username')
+
+
+class BloggerDetailView(DetailView):
+    model = Author
+    context_object_name = 'blogger'
+    template_name = 'blogs/blogger_detail.html'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get all blogs by this author
+        blogs = self.object.blogs.all().order_by('-created_at')
+
+        # Paginate them
+        paginator = Paginator(blogs, self.paginate_by)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['blogs'] = page_obj  # paginated blogs
+        context['page_obj'] = page_obj  # for pagination template
+        return context
 
 class BlogListView(ListView):
     model = Blog
