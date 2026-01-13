@@ -24,6 +24,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', RegisterView.as_view(), name='register'),
     path('blog/', include('blogs.urls')),
+    path('chat/', include('chat.urls')),
     path('', RedirectView.as_view(pattern_name='index', permanent=True)),
 ]
 

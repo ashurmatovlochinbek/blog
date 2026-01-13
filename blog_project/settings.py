@@ -56,8 +56,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'channels',
     'accounts',
     'blogs',
+    'chat',
 ]
 SITE_ID = 1
 
@@ -94,7 +96,10 @@ TEMPLATES = [
     },
 ]
 
+
+ASGI_APPLICATION = 'blog_project.asgi.application'
 WSGI_APPLICATION = 'blog_project.wsgi.application'
+
 
 
 # Database
@@ -107,6 +112,11 @@ if DEBUG:
             'NAME': BASE_DIR / 'db.sqlite3',
         },
     }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
 else:
     DATABASES = {
         'default': dj_database_url.config(
@@ -115,7 +125,17 @@ else:
         conn_max_age=600,
         )
     }
-
+    REDIS_URL = os.getenv("REDIS_URL")
+    if not REDIS_URL:
+        raise ValueError("REDIS_URL is required in production")
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

@@ -20,6 +20,11 @@
       {{ blog.content|linebreaks }}
     </div>
 
+    <!-- Inside your blog-detail div -->
+    <div style="margin-top: 20px;">
+        <a href="{% url 'blog-chat' blog.pk %}" class="footer-link">💬 Join Live Chat</a>
+    </div>
+
     <div style="margin-top: 20px;">
       <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>
     </div>

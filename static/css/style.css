@@ -589,6 +589,10 @@ button[type="submit"]:hover {
     display: block;
   }
 
+  #chat-container {
+    height: 300px;
+  }
+
   .sidebar {
     position: fixed;
     top: 0;
@@ -608,4 +612,98 @@ button[type="submit"]:hover {
   .container {
     margin-top: 40px; /* Make space for hamburger button */
   }
+}
+
+/* === Chat Room Styles (Retro Windows 95 Theme) === */
+
+.chat-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #808080;
+}
+
+.chat-title {
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  color: #000;
+}
+
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 400px; /* Fixed height for scrollable area */
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  background-color: #ffffff;
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  background-color: #f0f0f0; /* Light gray like old chat windows */
+}
+
+.chat-message {
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  word-wrap: break-word;
+}
+
+.chat-message strong {
+  color: #000080; /* Dark blue like links */
+  font-weight: bold;
+}
+
+.chat-timestamp {
+  color: #666;
+  font-size: 10px;
+  margin-left: 6px;
+}
+
+.chat-input-box {
+  display: flex;
+  padding: 6px;
+  background-color: #d4d0c8;
+  border-top: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+#chat-message-input {
+  flex: 1;
+  padding: 4px;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  background-color: #ffffff;
+}
+
+#chat-send-btn {
+  padding: 4px 12px;
+  margin-left: 6px;
+  background-color: #d4d0c8;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+  font-family: "MS Sans Serif", "Tahoma", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#chat-send-btn:hover {
+  background-color: #c0c0c0;
+}
+
+#chat-send-btn:active {
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+/* Login prompt for chat (reuse existing style) */
+.login-prompt {
+  /* Already defined — no need to duplicate */
 }

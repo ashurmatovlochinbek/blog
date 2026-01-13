@@ -1,0 +1,32 @@
+<!-- templates/chat/chat_room.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Chat: {{ blog.title }} - Retro Blog</title>
+{% endblock %}
+
+{% block content %}
+    <h1>Discussion: "{{ blog.title }}"</h1>
+    <p>By {{ blog.author.user.username }} • Started on {{ blog.created_at|date:"F d, Y" }}</p>
+
+    {% if user.is_authenticated %}
+        <div id="chat-container">
+            <div id="chat-messages"></div>
+            <div class="chat-input-box">
+                <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="500" />
+                <button id="chat-send-btn">Send</button>
+            </div>
+        </div>
+        <input type="hidden" id="blog-id" value="{{ blog.pk }}" />
+        <script src="{% static 'js/chat.js' %}"></script>
+    {% else %}
+        <div class="login-prompt">
+            <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to join the chat.</p>
+        </div>
+    {% endif %}
+
+    <p><a href="{% url 'blog-detail' blog.pk %}">← Back to Blog</a></p>
+{% endblock %}
+
+{% block pagination %}{% endblock %}
