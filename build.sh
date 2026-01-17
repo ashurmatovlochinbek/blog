@@ -12,3 +12,5 @@ python manage.py createsu
 python manage.py setdomain
 
 #python -m gunicorn blog_project.asgi:application -k uvicorn.workers.UvicornWorker
+
+#python -m daphne blog_project.asgi:application --port 8000
