@@ -32,8 +32,8 @@ if os.getenv('DEBUG') == 'True':
     DEFAULT_DOMAIN = 'localhost:8000'
 else:
     DEBUG = False
-    ALLOWED_HOSTS = ['https://blog-jo8c.onrender.com', 'blog-jo8c.onrender.com', 'www.blog-jo8c.onrender.com']
-    DEFAULT_DOMAIN = 'blog-jo8c.onrender.com'
+    ALLOWED_HOSTS = ['blog-npu6.onrender.com', 'www.blog-npu6.onrender.com']
+    DEFAULT_DOMAIN = 'blog-npu6.onrender.com'
 
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
