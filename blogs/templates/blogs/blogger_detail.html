@@ -19,7 +19,7 @@
           {% endif %}
         </div>
         <div class="blog-excerpt">
-          {{ blog.content|truncatewords:30 }}
+          {{ blog.get_preview_text }}
         </div>
       </div>
     {% endfor %}

@@ -6,10 +6,11 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, ListView, DetailView
 
 from blogs.forms import CustomUserCreationForm, BlogForm
-from blogs.models import Blog, Author
+from blogs.models import Blog, Author, BlogImage
 from blogs.forms import CommentForm
 from blogs.models import Comment
 
@@ -231,3 +232,39 @@ class RegisterView(CreateView):
         from .models import Author
         Author.objects.create(user=self.object)
         return response
+
+
+class UploadImageView(LoginRequiredMixin, View):
+    """
+    Handle image uploads from Editor.js
+
+    When user clicks "add image" in the editor:
+    1. Editor.js sends image file to this view via AJAX
+    2. This view saves the image
+    3. Returns the image URL to Editor.js
+    4. Editor.js inserts the URL into the content JSON
+    """
+
+    def post(self, request, *args, **kwargs):
+        # Check if image file is in request
+        if 'image' not in request.FILES:
+            return JsonResponse({
+                'success': 0,
+                'error': 'No image provided'
+            })
+
+        image_file = request.FILES['image']
+
+        # Create BlogImage instance (without blog reference for now)
+        # The image URL will be stored in the blog's JSON content
+        blog_image = BlogImage.objects.create(image=image_file)
+
+        # Return success response in Editor.js format
+        # Editor.js expects this exact JSON structure
+        return JsonResponse({
+            'success': 1,
+            'file': {
+                'url': blog_image.image.url,
+            }
+        })
+

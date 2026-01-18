@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:pk>/', views.BlogDetailView.as_view(), name='blog-detail'),
     path('create/', views.BlogCreateView.as_view(), name='blog-create'),
     path('<int:blog_pk>/comment/', views.AddCommentView.as_view(), name='add-comment'),
+
+    path('upload-image/', views.UploadImageView.as_view(), name='upload-blog-image'),
 ]

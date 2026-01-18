@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.conf.urls.static import static
+from blog_project import settings
 from blogs.views import RegisterView
 
 urlpatterns = [
@@ -27,6 +29,9 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path('', RedirectView.as_view(pattern_name='index', permanent=True)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Default Authentication URLs
 # Django's django.contrib.auth.urls provides these standard URL patterns:
