@@ -176,7 +176,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -204,37 +204,54 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 
 
-# # Import necessary modules
-# import os
-# from storages.backends.s3boto3 import S3Boto3Storage
-#
-#
-# # Set the required AWS credentials
-# AWS_ACCESS_KEY_ID = 'your-access-key-id'
-# AWS_SECRET_ACCESS_KEY = 'your-secret-access-key'
-# AWS_STORAGE_BUCKET_NAME = 'your-bucket-name'
-# AWS_S3_REGION_NAME = 'your-region-name'  # e.g. us-west-2
-#
-# # Optional: Set custom domain for static and media files
-# # AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-#
-# # Set the static and media files locations
-# STATICFILES_LOCATION = 'static'
-# MEDIAFILES_LOCATION = 'media'
-#
-# # Define custom storage classes for static and media files
-# class StaticStorage(S3Boto3Storage):
-#     location = STATICFILES_LOCATION
-#
-# class MediaStorage(S3Boto3Storage):
-#     location = MEDIAFILES_LOCATION
-#     file_overwrite = False
-#
-# # Configure static and media files storage
-# STATICFILES_STORAGE = 'your_app_name.settings.StaticStorage'
-# DEFAULT_FILE_STORAGE = 'your_app_name.settings.MediaStorage'
-#
-# # Set static and media URLs
-# STATIC_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{STATICFILES_LOCATION}/'
-# MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{MEDIAFILES_LOCATION}/'
+# AWS / S3 / CloudFront settings
 
+# USE_S3_FOR_MEDIA = os.getenv('USE_S3_FOR_MEDIA', 'False').lower() in ('true', '1', 'yes', 'on')
+
+if not DEBUG:
+    required_vars = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_STORAGE_BUCKET_NAME', 'AWS_CLOUDFRONT_DOMAIN']
+
+    missing = [var for var in required_vars if not os.getenv(var)]
+
+    if missing:
+        raise ValueError(f"Missing required env vars for S3: {missing}")
+
+    import os
+    from storages.backends.s3boto3 import S3Boto3Storage
+
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+
+    # Use CloudFront domain (NOT S3 URL)
+    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_CLOUDFRONT_DOMAIN')
+
+    # Only use S3 for media files (user uploads)
+    class MediaStorage(S3Boto3Storage):
+        location = 'media'
+        file_overwrite = False
+
+    # DEFAULT_FILE_STORAGE = 'blog_project.settings.MediaStorage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "blog_project.settings.MediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }

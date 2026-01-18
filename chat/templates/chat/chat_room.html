@@ -1,3 +1,36 @@
+{#<!-- templates/chat/chat_room.html -->#}
+{#{% extends 'base.html' %}#}
+{#{% load static %}#}
+{##}
+{#{% block title %}#}
+{#<title>Chat: {{ blog.title }} - Retro Blog</title>#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <h1>Discussion: "{{ blog.title }}"</h1>#}
+{#    <p>By {{ blog.author.user.username }} • Started on {{ blog.created_at|date:"F d, Y" }}</p>#}
+{##}
+{#    {% if user.is_authenticated %}#}
+{#        <div id="chat-container">#}
+{#            <div id="chat-messages"></div>#}
+{#            <div class="chat-input-box">#}
+{#                <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="500" />#}
+{#                <button id="chat-send-btn">Send</button>#}
+{#            </div>#}
+{#        </div>#}
+{#        <input type="hidden" id="blog-id" value="{{ blog.pk }}" />#}
+{#        <script src="{% static 'js/chat.js' %}"></script>#}
+{#    {% else %}#}
+{#        <div class="login-prompt">#}
+{#            <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to join the chat.</p>#}
+{#        </div>#}
+{#    {% endif %}#}
+{##}
+{#    <p><a href="{% url 'blog-detail' blog.pk %}">← Back to Blog</a></p>#}
+{#{% endblock %}#}
+{##}
+{#{% block pagination %}{% endblock %}#}
+
 <!-- templates/chat/chat_room.html -->
 {% extends 'base.html' %}
 {% load static %}
@@ -11,6 +44,10 @@
     <p>By {{ blog.author.user.username }} • Started on {{ blog.created_at|date:"F d, Y" }}</p>
 
     {% if user.is_authenticated %}
+        <!-- Pass current user info to JS -->
+        <input type="hidden" id="blog-id" value="{{ blog.pk }}" />
+        <input type="hidden" id="current-user-id" value="{{ user.id }}" />
+
         <div id="chat-container">
             <div id="chat-messages"></div>
             <div class="chat-input-box">
@@ -18,7 +55,7 @@
                 <button id="chat-send-btn">Send</button>
             </div>
         </div>
-        <input type="hidden" id="blog-id" value="{{ blog.pk }}" />
+
         <script src="{% static 'js/chat.js' %}"></script>
     {% else %}
         <div class="login-prompt">
@@ -27,6 +64,93 @@
     {% endif %}
 
     <p><a href="{% url 'blog-detail' blog.pk %}">← Back to Blog</a></p>
+
+    <style>
+      #chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 70vh;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 1rem 0;
+      }
+
+      #chat-messages {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .message {
+        max-width: 70%;
+        padding: 8px 12px;
+        border-radius: 12px;
+        position: relative;
+        word-wrap: break-word;
+      }
+
+      /* Other users' messages (left) */
+      .message.received {
+        align-self: flex-start;
+        background-color: #f0f0f0;
+        border-bottom-left-radius: 4px;
+      }
+
+      /* Current user's messages (right) */
+      .message.sent {
+        align-self: flex-end;
+        background-color: #dcf8c6;
+        border-bottom-right-radius: 4px;
+        text-align: right;
+      }
+
+      .message-sender {
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: #555;
+      }
+
+      .message-time {
+        font-size: 0.75rem;
+        color: #888;
+        text-align: right;
+        margin-top: 4px;
+      }
+
+      .chat-input-box {
+        display: flex;
+        padding: 0.5rem;
+        border-top: 1px solid #eee;
+        background: white;
+      }
+
+      #chat-message-input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        outline: none;
+      }
+
+      #chat-send-btn {
+        margin-left: 8px;
+        padding: 8px 16px;
+        background: #007acc;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+
+      #chat-send-btn:hover {
+        background: #005fa3;
+      }
+    </style>
 {% endblock %}
 
 {% block pagination %}{% endblock %}
