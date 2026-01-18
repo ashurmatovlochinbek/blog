@@ -1,14 +1,18 @@
 <!-- templates/blogs/blog_form.html -->
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}<title>Create Blog - Retro Blog</title>{% endblock %}
+{% block title %}
+  <title>Create Blog - Retro Blog</title>
+{% endblock %}
 
 {% block content %}
   <h2>Create New Blog</h2>
 
-  <form method="post">
+  <form method="post" id="blog-form">
     {% csrf_token %}
 
+    <!-- Title Input -->
     <div class="form-group">
       <label for="{{ form.title.id_for_label }}">Title:</label>
       {{ form.title }}
@@ -17,18 +21,149 @@
       {% endif %}
     </div>
 
+    <!-- Content Editor -->
     <div class="form-group">
-      <label for="{{ form.content.id_for_label }}">Content:</label>
+      <label>Content:</label>
+
+      <!-- This is where the rich editor appears -->
+      <div id="editorjs" style="background: white; border: 2px solid #000; padding: 10px; min-height: 300px;"></div>
+
+      <!-- Hidden field - Editor.js will put JSON here -->
       {{ form.content }}
+
       {% if form.content.errors %}
-        <div class=error-box">{{ form.content.errors }}</div>
+        <div class="error-box">{{ form.content.errors }}</div>
       {% endif %}
     </div>
 
     <button type="submit">Publish Blog</button>
   </form>
 
+
   <div style="margin-top: 16px;">
     <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>
   </div>
+
+  <!-- Editor.js CSS (using specific version - more reliable) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2/dist/editor.min.css">
+
+  <!-- Editor.js Core and Plugins (specific versions) -->
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.7.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.8.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.8.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.5.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.8.0"></script>
+
+  <script>
+    // Helper function to get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    // Initialize Editor.js
+    const editor = new EditorJS({
+      holder: 'editorjs',
+      tools: {
+        header: {
+          class: Header,
+          config: {
+            placeholder: 'Enter a header',
+            levels: [2, 3, 4],
+            defaultLevel: 2
+          }
+        },
+
+        list: {
+          class: List,
+          inlineToolbar: true,
+        },
+
+        image: {
+          class: ImageTool,
+          config: {
+            endpoints: {
+              byFile: '{% url "upload-blog-image" %}',
+            },
+            additionalRequestHeaders: {
+              'X-CSRFToken': csrftoken
+            },
+            field: 'image',
+            types: 'image/*'
+          }
+        },
+
+        quote: {
+          class: Quote,
+          inlineToolbar: true,
+          config: {
+            quotePlaceholder: 'Enter a quote',
+            captionPlaceholder: 'Quote\'s author',
+          },
+        },
+
+        code: {
+          class: CodeTool,
+        }
+      },
+
+      placeholder: 'Start writing... Click + to add images, headers, lists, etc.'
+    });
+
+    // Handle form submission
+    document.getElementById('blog-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      try {
+        // Save editor data
+        const outputData = await editor.save();
+
+        // Put JSON data into hidden field
+        document.getElementById('{{ form.content.id_for_label }}').value = JSON.stringify(outputData);
+
+        // Submit form
+        this.submit();
+      } catch (error) {
+        console.error('Saving failed:', error);
+        alert('Failed to save content. Please try again.');
+      }
+    });
+  </script>
+
+  <!-- Editor.js styling to match Windows 95 theme -->
+  <style>
+    #editorjs {
+      font-family: 'MS Sans Serif', sans-serif;
+      font-size: 13px;
+    }
+
+    .ce-block__content {
+      max-width: 100%;
+    }
+
+    .ce-toolbar__plus,
+    .ce-toolbar__settings-btn {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #ffffff #000000 #000000 #ffffff;
+    }
+
+    .ce-toolbar__plus:hover,
+    .ce-toolbar__settings-btn:hover {
+      background: #d4d0c8;
+    }
+  </style>
 {% endblock %}

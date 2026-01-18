@@ -1,3 +1,271 @@
+{#<!-- templates/blogs/blog_detail.html -->#}
+{#{% extends 'base.html' %}#}
+{#{% load static %}#}
+{##}
+{#{% block title %}<title>{{ blog.title }} - Retro Blog</title>{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#  <div class="blog-detail">#}
+{#    <h1 class="blog-title">{{ blog.title }}</h1>#}
+{##}
+{#    <div class="blog-meta">#}
+{#      By <strong>{{ blog.author.user.username }}</strong> •#}
+{#      {{ blog.created_at|date:"F d, Y" }}#}
+{#      {% if blog.updated_at > blog.created_at %}#}
+{#        (Updated: {{ blog.updated_at|date:"M d, Y" }})#}
+{#      {% endif %}#}
+{#    </div>#}
+{##}
+{#    <!-- Render Editor.js Content -->#}
+{#    <div class="blog-content" id="blog-content">#}
+{#      <p style="color: #666;">Loading content...</p>#}
+{#    </div>#}
+{##}
+{#    <div style="margin-top: 20px;">#}
+{#        <a href="{% url 'blog-chat' blog.pk %}" class="footer-link">💬 Join Live Chat</a>#}
+{#    </div>#}
+{##}
+{#    <div style="margin-top: 20px;">#}
+{#      <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>#}
+{#    </div>#}
+{##}
+{#    <!-- Comments Section -->#}
+{#    <div class="comments-section">#}
+{#      <h3 class="comments-title">#}
+{#        Comments (<span id="comment-count">{{ blog.comments.count }}</span>)#}
+{#      </h3>#}
+{##}
+{#      {% if user.is_authenticated %}#}
+{#        <div class="comment-form-box">#}
+{#          <form id="comment-form" method="post" action="{% url 'add-comment' blog.pk %}">#}
+{#            {% csrf_token %}#}
+{#            <div class="form-group">#}
+{#              {{ comment_form.content }}#}
+{#            </div>#}
+{#            <button type="submit" class="comment-submit-btn">Post Comment</button>#}
+{#          </form>#}
+{#        </div>#}
+{#      {% else %}#}
+{#        <div class="login-prompt">#}
+{#          <p>#}
+{#            Please <a href="{% url 'login' %}?next={{ request.path }}" class="footer-link">login</a>#}
+{#            to leave a comment.#}
+{#          </p>#}
+{#        </div>#}
+{#      {% endif %}#}
+{##}
+{#      <div id="comments-list">#}
+{#        {% if comments %}#}
+{#          {% for comment in comments %}#}
+{#            {% include 'blogs/fragments/comment_item.html' %}#}
+{#          {% endfor %}#}
+{#        {% else %}#}
+{#          <p class="no-comments" id="no-comments-message">No comments yet. Be the first to comment!</p>#}
+{#        {% endif %}#}
+{#      </div>#}
+{##}
+{#      {% if page_obj.has_next %}#}
+{#        <div class="load-more-container">#}
+{#          <button id="load-more-btn" class="load-more-btn" data-next-page="{{ page_obj.next_page_number }}" data-blog-pk="{{ blog.pk }}">#}
+{#            Load More Comments#}
+{#          </button>#}
+{#        </div>#}
+{#      {% endif %}#}
+{#    </div>#}
+{#  </div>#}
+{##}
+{#  <!-- Safely inject blog content as valid JSON -->#}
+{#  {{ blog.content|json_script:"blog-content-data" }}#}
+{##}
+{#  <script>#}
+{#    // Parse the JSON safely from the script tag#}
+{#    const blogContent = JSON.parse(document.getElementById('blog-content-data').textContent);#}
+{##}
+{#    function escapeHtml(text) {#}
+{#      if (typeof text !== 'string') return '';#}
+{#      const div = document.createElement('div');#}
+{#      div.textContent = text;#}
+{#      return div.innerHTML;#}
+{#    }#}
+{##}
+{#    function renderEditorContent(data) {#}
+{#      const container = document.getElementById('blog-content');#}
+{#      container.innerHTML = '';#}
+{##}
+{#      if (!data || !data.blocks || data.blocks.length === 0) {#}
+{#        container.innerHTML = '<p>No content available</p>';#}
+{#        return;#}
+{#      }#}
+{##}
+{#      data.blocks.forEach(block => {#}
+{#        let html = '';#}
+{##}
+{#        switch(block.type) {#}
+{#          case 'header':#}
+{#            const level = Math.min(Math.max(block.data.level || 2, 1), 6);#}
+{#            html = `<h${level}>${escapeHtml(block.data.text)}</h${level}>`;#}
+{#            break;#}
+{##}
+{#          case 'paragraph':#}
+{#            html = `<p>${escapeHtml(block.data.text)}</p>`;#}
+{#            break;#}
+{##}
+{#          case 'list':#}
+{#            const listType = block.data.style === 'ordered' ? 'ol' : 'ul';#}
+{#            const items = (block.data.items || []).map(item =>#}
+{#              `<li>${escapeHtml(item)}</li>`#}
+{#            ).join('');#}
+{#            html = `<${listType}>${items}</${listType}>`;#}
+{#            break;#}
+{##}
+{#          case 'image':#}
+{#            if (block.data.file && block.data.file.url) {#}
+{#              const caption = block.data.caption ?#}
+{#                `<figcaption>${escapeHtml(block.data.caption)}</figcaption>` : '';#}
+{#              html = `#}
+{#                <figure class="blog-image">#}
+{#                  <img src="${escapeHtml(block.data.file.url)}"#}
+{#                       alt="${escapeHtml(block.data.caption || 'Blog image')}">#}
+{#                  ${caption}#}
+{#                </figure>#}
+{#              `;#}
+{#            } else {#}
+{#              html = '<p>[Image not available]</p>';#}
+{#            }#}
+{#            break;#}
+{##}
+{#          case 'quote':#}
+{#            html = `#}
+{#              <blockquote>#}
+{#                <p>${escapeHtml(block.data.text)}</p>#}
+{#                ${block.data.caption ?#}
+{#                  `<cite>${escapeHtml(block.data.caption)}</cite>` : ''}#}
+{#              </blockquote>#}
+{#            `;#}
+{#            break;#}
+{##}
+{#          case 'code':#}
+{#            html = `<pre><code>${escapeHtml(block.data.code)}</code></pre>`;#}
+{#            break;#}
+{##}
+{#          default:#}
+{#            // Fallback: try to render text if present#}
+{#            const text = block.data?.text || '';#}
+{#            html = `<p>${escapeHtml(text)}</p>`;#}
+{#        }#}
+{##}
+{#        container.innerHTML += html;#}
+{#      });#}
+{#    }#}
+{##}
+{#    // Render content when page loads#}
+{#    document.addEventListener('DOMContentLoaded', () => {#}
+{#      renderEditorContent(blogContent);#}
+{#    });#}
+{#  </script>#}
+{##}
+{#  <style>#}
+{#    .blog-content {#}
+{#      margin: 30px 0;#}
+{#      line-height: 1.6;#}
+{#      background: white;#}
+{#      padding: 15px;#}
+{#      border: 2px solid #000;#}
+{#      border-right-color: #dfdfdf;#}
+{#      border-bottom-color: #dfdfdf;#}
+{#    }#}
+{##}
+{#    .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {#}
+{#      margin-top: 20px;#}
+{#      margin-bottom: 10px;#}
+{#      font-weight: bold;#}
+{#    }#}
+{##}
+{#    .blog-content h2 {#}
+{#      font-size: 18px;#}
+{#      border-bottom: 2px solid #000;#}
+{#      padding-bottom: 5px;#}
+{#    }#}
+{##}
+{#    .blog-content h3 {#}
+{#      font-size: 16px;#}
+{#    }#}
+{##}
+{#    .blog-content h4 {#}
+{#      font-size: 14px;#}
+{#    }#}
+{##}
+{#    .blog-content p {#}
+{#      margin-bottom: 12px;#}
+{#    }#}
+{##}
+{#    .blog-content ul, .blog-content ol {#}
+{#      margin-left: 30px;#}
+{#      margin-bottom: 12px;#}
+{#    }#}
+{##}
+{#    .blog-content li {#}
+{#      margin-bottom: 6px;#}
+{#    }#}
+{##}
+{#    .blog-content .blog-image {#}
+{#      margin: 20px 0;#}
+{#      text-align: center;#}
+{#      background: #c0c0c0;#}
+{#      padding: 10px;#}
+{#      border: 2px solid #000;#}
+{#    }#}
+{##}
+{#    .blog-content .blog-image img {#}
+{#      max-width: 100%;#}
+{#      height: auto;#}
+{#      border: 2px solid #000;#}
+{#      display: block;#}
+{#      margin: 0 auto;#}
+{#    }#}
+{##}
+{#    .blog-content figcaption {#}
+{#      margin-top: 8px;#}
+{#      font-size: 12px;#}
+{#      color: #000;#}
+{#      font-style: italic;#}
+{#    }#}
+{##}
+{#    .blog-content blockquote {#}
+{#      border-left: 4px solid #000;#}
+{#      margin: 15px 0;#}
+{#      padding: 10px 15px;#}
+{#      background: #dfdfdf;#}
+{#      font-style: italic;#}
+{#    }#}
+{##}
+{#    .blog-content blockquote cite {#}
+{#      display: block;#}
+{#      margin-top: 8px;#}
+{#      font-size: 12px;#}
+{#      font-style: normal;#}
+{#      font-weight: bold;#}
+{#    }#}
+{##}
+{#    .blog-content pre {#}
+{#      background: #000;#}
+{#      color: #0f0;#}
+{#      padding: 12px;#}
+{#      border: 2px solid #000;#}
+{#      overflow-x: auto;#}
+{#      margin: 15px 0;#}
+{#      font-family: 'Courier New', monospace;#}
+{#    }#}
+{##}
+{#    .blog-content code {#}
+{#      font-family: 'Courier New', monospace;#}
+{#      font-size: 12px;#}
+{#    }#}
+{#  </style>#}
+{##}
+{#  <script src="{% static 'js/comments.js' %}"></script>#}
+{#{% endblock %}#}
+
 <!-- templates/blogs/blog_detail.html -->
 {% extends 'base.html' %}
 {% load static %}
@@ -5,78 +273,335 @@
 {% block title %}<title>{{ blog.title }} - Retro Blog</title>{% endblock %}
 
 {% block content %}
-  <div class="blog-detail">
-    <h1 class="blog-title">{{ blog.title }}</h1>
+  <article class="notion-blog">
+    <header class="notion-header">
+      <h1 class="notion-title">{{ blog.title }}</h1>
+      <div class="notion-meta">
+        By <strong>{{ blog.author.user.username }}</strong> •
+        {{ blog.created_at|date:"F d, Y" }}
+        {% if blog.updated_at > blog.created_at %}
+          (Updated: {{ blog.updated_at|date:"M d, Y" }})
+        {% endif %}
+      </div>
+    </header>
 
-    <div class="blog-meta">
-      By <strong>{{ blog.author.user.username }}</strong> •
-      {{ blog.created_at|date:"F d, Y" }}
-      {% if blog.updated_at > blog.created_at %}
-        (Updated: {{ blog.updated_at|date:"M d, Y" }})
-      {% endif %}
+    <!-- Render Editor.js Content -->
+    <div class="notion-content" id="blog-content">
+      <p style="color: #666;">Loading content...</p>
     </div>
 
-    <div class="blog-content">
-      {{ blog.content|linebreaks }}
-    </div>
-
-    <!-- Inside your blog-detail div -->
-    <div style="margin-top: 20px;">
-        <a href="{% url 'blog-chat' blog.pk %}" class="footer-link">💬 Join Live Chat</a>
-    </div>
-
-    <div style="margin-top: 20px;">
-      <a href="{% url 'blog-list' %}" class="footer-link">← Back to Blog List</a>
+    <div class="notion-footer-links">
+      <a href="{% url 'blog-chat' blog.pk %}" class="notion-link">💬 Join Live Chat</a>
+      <a href="{% url 'blog-list' %}" class="notion-link">← Back to Blog List</a>
     </div>
 
     <!-- Comments Section -->
-    <div class="comments-section">
-      <h3 class="comments-title">
+    <section class="notion-comments">
+      <h3 class="notion-comments-title">
         Comments (<span id="comment-count">{{ blog.comments.count }}</span>)
       </h3>
 
-      <!-- Comment Form (only for logged-in users) -->
       {% if user.is_authenticated %}
-        <div class="comment-form-box">
+        <div class="notion-comment-form">
           <form id="comment-form" method="post" action="{% url 'add-comment' blog.pk %}">
             {% csrf_token %}
-            <div class="form-group">
+            <div class="notion-form-group">
               {{ comment_form.content }}
             </div>
-            <button type="submit" class="comment-submit-btn">Post Comment</button>
+            <button type="submit" class="notion-btn">Post Comment</button>
           </form>
         </div>
       {% else %}
-        <div class="login-prompt">
-          <p>
-            Please <a href="{% url 'login' %}?next={{ request.path }}" class="footer-link">login</a>
-            to leave a comment.
-          </p>
-        </div>
+        <p class="notion-login-prompt">
+          Please <a href="{% url 'login' %}?next={{ request.path }}" class="notion-link">login</a> to leave a comment.
+        </p>
       {% endif %}
 
-      <!-- Comments List -->
       <div id="comments-list">
         {% if comments %}
           {% for comment in comments %}
             {% include 'blogs/fragments/comment_item.html' %}
           {% endfor %}
         {% else %}
-          <p class="no-comments" id="no-comments-message">No comments yet. Be the first to comment!</p>
+          <p class="notion-no-comments">No comments yet. Be the first to comment!</p>
         {% endif %}
       </div>
 
-      <!-- Load More Button -->
       {% if page_obj.has_next %}
-        <div class="load-more-container">
-          <button id="load-more-btn" class="load-more-btn" data-next-page="{{ page_obj.next_page_number }}" data-blog-pk="{{ blog.pk }}">
+        <div class="notion-load-more">
+          <button id="load-more-btn" class="notion-btn notion-btn-outline"
+                  data-next-page="{{ page_obj.next_page_number }}"
+                  data-blog-pk="{{ blog.pk }}">
             Load More Comments
           </button>
         </div>
       {% endif %}
-    </div>
-  </div>
+    </section>
+  </article>
 
-  <!-- JavaScript for Comments -->
+  <!-- Safely inject blog content as valid JSON -->
+  {{ blog.content|json_script:"blog-content-data" }}
+
+  <script>
+    const blogContent = JSON.parse(document.getElementById('blog-content-data').textContent);
+
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderEditorContent(data) {
+      const container = document.getElementById('blog-content');
+      container.innerHTML = '';
+
+      if (!data || !data.blocks || data.blocks.length === 0) {
+        container.innerHTML = '<p>No content available</p>';
+        return;
+      }
+
+      data.blocks.forEach(block => {
+        let html = '';
+
+        switch(block.type) {
+          case 'header':
+            const level = Math.min(Math.max(block.data.level || 2, 1), 6);
+            html = `<h${level} class="notion-h${level}">${escapeHtml(block.data.text)}</h${level}>`;
+            break;
+
+          case 'paragraph':
+            html = `<p class="notion-paragraph">${escapeHtml(block.data.text)}</p>`;
+            break;
+
+          case 'list':
+            const listType = block.data.style === 'ordered' ? 'ol' : 'ul';
+            const items = (block.data.items || []).map(item =>
+              `<li>${escapeHtml(item)}</li>`
+            ).join('');
+            html = `<${listType} class="notion-list">${items}</${listType}>`;
+            break;
+
+          case 'image':
+            if (block.data.file && block.data.file.url) {
+              const caption = block.data.caption ?
+                `<figcaption class="notion-image-caption">${escapeHtml(block.data.caption)}</figcaption>` : '';
+              html = `
+                <figure class="notion-image">
+                  <img src="${escapeHtml(block.data.file.url)}"
+                       alt="${escapeHtml(block.data.caption || 'Blog image')}">
+                  ${caption}
+                </figure>
+              `;
+            } else {
+              html = '<p>[Image not available]</p>';
+            }
+            break;
+
+          case 'quote':
+            html = `
+              <blockquote class="notion-quote">
+                <p>${escapeHtml(block.data.text)}</p>
+                ${block.data.caption ?
+                  `<cite class="notion-quote-cite">${escapeHtml(block.data.caption)}</cite>` : ''}
+              </blockquote>
+            `;
+            break;
+
+          case 'code':
+            html = `<pre class="notion-code"><code>${escapeHtml(block.data.code)}</code></pre>`;
+            break;
+
+          default:
+            const text = block.data?.text || '';
+            html = `<p class="notion-paragraph">${escapeHtml(text)}</p>`;
+        }
+
+        container.innerHTML += html;
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderEditorContent(blogContent);
+    });
+  </script>
+
+  <style>
+    /* Notion-inspired clean design */
+    .notion-blog {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      color: #111;
+      line-height: 1.6;
+    }
+
+    .notion-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 1rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .notion-meta {
+      color: #666;
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1.5rem;
+    }
+
+    /* Content Styling */
+    .notion-content {
+      margin: 2rem 0;
+    }
+
+    .notion-paragraph {
+      margin: 1em 0;
+      font-size: 1.05rem;
+      color: #222;
+    }
+
+    .notion-h1 { font-size: 2rem; margin: 2rem 0 1rem; }
+    .notion-h2 { font-size: 1.6rem; margin: 2rem 0 1rem; padding-bottom: 0.3rem; border-bottom: 1px solid #eee; }
+    .notion-h3 { font-size: 1.3rem; margin: 1.8rem 0 1rem; }
+    .notion-h4 { font-size: 1.15rem; margin: 1.6rem 0 1rem; }
+
+    .notion-list {
+      margin: 1em 0;
+      padding-left: 1.5rem;
+    }
+    .notion-list li {
+      margin: 0.4em 0;
+    }
+
+    /* Images */
+    .notion-image {
+      margin: 2rem 0;
+      text-align: center;
+    }
+    .notion-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .notion-image-caption {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Quote */
+    .notion-quote {
+      margin: 1.5rem 0;
+      padding: 1rem 1.5rem;
+      background: #f8f9fa;
+      border-left: 3px solid #007acc;
+      border-radius: 0 4px 4px 0;
+    }
+    .notion-quote p {
+      margin: 0;
+      font-style: italic;
+      color: #333;
+    }
+    .notion-quote-cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-style: normal;
+      font-weight: 600;
+      color: #007acc;
+    }
+
+    /* Code */
+    .notion-code {
+      background: #f6f8fa;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 0.95rem;
+    }
+
+    /* Links & Buttons */
+    .notion-link {
+      color: #007acc;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .notion-link:hover {
+      text-decoration: underline;
+    }
+
+    .notion-footer-links {
+      margin: 2.5rem 0;
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .notion-btn {
+      background: #007acc;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .notion-btn:hover {
+      background: #005fa3;
+    }
+    .notion-btn-outline {
+      background: transparent;
+      border: 1px solid #007acc;
+      color: #007acc;
+    }
+    .notion-btn-outline:hover {
+      background: #f0f7ff;
+    }
+
+    .notion-comments-title {
+      margin: 2.5rem 0 1rem;
+      padding-top: 2rem;
+      border-top: 1px solid #eee;
+      font-size: 1.4rem;
+    }
+
+    .notion-comment-form textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .notion-no-comments,
+    .notion-login-prompt {
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .notion-blog {
+        padding: 1.5rem 1rem;
+      }
+      .notion-title {
+        font-size: 2rem;
+      }
+      .notion-footer-links {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+
   <script src="{% static 'js/comments.js' %}"></script>
 {% endblock %}
